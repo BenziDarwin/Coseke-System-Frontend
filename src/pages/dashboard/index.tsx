@@ -17,6 +17,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
+import {useSelector, useDispatch} from "react-redux";
 import * as React from 'react';
 import Home from '../../components/home';
 import Leave from '../../components/leave';
@@ -95,7 +96,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function Dashboard() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [current, setCurrent] = React.useState<any>(<Home/>);
+  const dashboard = useSelector((state:any) => state.dashboard);
+  const dispatch = useDispatch();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -104,24 +106,8 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const pageChangeHandler = (page:string) => {
-    let value = dashboardReducer(page);
-    setCurrent(value);
-  }
-  function dashboardReducer(action:string) {
-    switch (action) {
-        case "home":
-            return <Home/>;
-    
-        case "leave":
-            return <Leave/>;
-        default:
-            return null;
-    }
-}
   React.useEffect(() => {
-  },[current])
+  },[dashboard.currentPage])
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -159,7 +145,7 @@ export default function Dashboard() {
             .map((listItem:any, index:any) => (
             <ListItem key={index} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
-              onClick={() => pageChangeHandler(listItem.value)}
+              onClick={() => dispatch({type:listItem.value})}
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
@@ -183,7 +169,7 @@ export default function Dashboard() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        {current}
+        {dashboard.currentPage}
       </Box>
     </Box>
   );

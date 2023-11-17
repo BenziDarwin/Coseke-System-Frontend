@@ -12,16 +12,31 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { Logo } from '../../functions/images';
 import { useNavigate } from 'react-router-dom';
+import { SubmitHandler, useForm } from "react-hook-form";
+import { object, string, z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { login } from '../../core/api';
 
 export default function Login() {
   const navigate = useNavigate();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+  const validationSchema = object({
+    email: string().min(1,"Field is required!"),
+    password: string().min(1,"Field is required!"),
+  });
+
+  type SignUpSchemaType = z.infer<typeof validationSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<SignUpSchemaType>({ resolver: zodResolver(validationSchema) });
+
+  const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
+    console.log(values);
+    await login(values);
+    navigate("/home");
   };
 
   return (
@@ -63,26 +78,30 @@ export default function Login() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
-                required
                 fullWidth
                 id="email"
                 label="Email Address"
-                name="email"
                 autoComplete="email"
+                error={!!errors["email"]}
+                helperText={errors["email"] ? errors["email"].message : ""}
+                {...register("email")}
                 autoFocus
               />
               <TextField
                 margin="normal"
-                required
                 fullWidth
-                name="password"
                 label="Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                error={!!errors["password"]}
+                helperText={
+                  errors["password"] ? errors["password"].message : ""
+                }
+                {...register("password")}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
@@ -92,7 +111,6 @@ export default function Login() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                onClick={() => navigate("/home")}
                 sx={{ mt: 3, mb: 2 }}
               >
                 Sign In
