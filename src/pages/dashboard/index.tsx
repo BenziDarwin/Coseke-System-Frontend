@@ -18,9 +18,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
 import {useSelector, useDispatch} from "react-redux";
+import PersonIcon from "@mui/icons-material/Person";
 import * as React from 'react';
 import Home from '../../components/home';
 import Leave from '../../components/leave';
+import { Collapse } from '@mui/material';
+import { ExpandLess, ExpandMore, StarBorder } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -99,6 +102,12 @@ export default function Dashboard() {
   const dashboard = useSelector((state:any) => state.dashboard);
   const dispatch = useDispatch();
 
+  const [collapse, setCollapse] = React.useState(true);
+
+  const handleClick = () => {
+    setCollapse(!collapse);
+  };
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -141,10 +150,43 @@ export default function Dashboard() {
         <List>
           {[
             {value:"home",title:"Home", icon:<HomeIcon/>},
-            {value:"leave",title:"Apply for Leave",icon:<TimeToLeaveIcon/>}]
+            {value:"leave",title:"Apply for Leave",icon:<TimeToLeaveIcon/>},
+            {value:"hr", title:"Human Resource", icon:<PersonIcon/>}
+          ]
             .map((listItem:any, index:any) => (
             <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
+              {listItem.value == "hr"? 
+              <>
+                 <ListItemButton
+              onClick={() => handleClick()}
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {listItem.icon}
+                </ListItemIcon>
+                <ListItemText primary={listItem.title} sx={{ opacity: open ? 1 : 0 }} />
+                {collapse ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              <Collapse in={collapse} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItemButton onClick={() => dispatch({type:"create-leave"})} sx={{ pl: 4 }}>
+            <ListItemText primary="Create Leave" />
+          </ListItemButton>
+        </List>
+      </Collapse>
+              </>
+              :
+               <ListItemButton
               onClick={() => dispatch({type:listItem.value})}
                 sx={{
                   minHeight: 48,
@@ -163,6 +205,9 @@ export default function Dashboard() {
                 </ListItemIcon>
                 <ListItemText primary={listItem.title} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
+
+              }
+             
             </ListItem>
           ))}
         </List>
