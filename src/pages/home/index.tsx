@@ -1,28 +1,28 @@
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import * as React from 'react';
-import { Logo } from '../../functions/images';
-import { useNavigate } from 'react-router-dom';
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import CssBaseline from "@mui/material/CssBaseline";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Grid from "@mui/material/Grid";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
+import { Logo } from "../../functions/images";
+import { useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { object, string, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { login } from '../../core/api';
+import { login } from "../../core/api";
 
 export default function Login() {
   const navigate = useNavigate();
 
   const validationSchema = object({
-    email: string().min(1,"Field is required!"),
-    password: string().min(1,"Field is required!"),
+    email: string().min(1, "Field is required!"),
+    password: string().min(1, "Field is required!"),
   });
 
   type SignUpSchemaType = z.infer<typeof validationSchema>;
@@ -41,44 +41,49 @@ export default function Login() {
 
   return (
     <Box>
-      <Grid container component="main" sx={{ height: '100vh' }}>
+      <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-        >
-          <Box component="img" 
-          src="https://source.unsplash.com/random?wallpapers"
-          sx={{
-            display:"flex",
-            objectFit: 'cover',
-            objectPosition: 'center'
-            }}/>
+        <Grid item xs={false} sm={4} md={7}>
+          <Box
+            component="img"
+            src="https://source.unsplash.com/random?wallpapers"
+            sx={{
+              display: "flex",
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+          />
         </Grid>
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
             sx={{
               my: 8,
               mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
           >
-            <Avatar src={Logo} sx={{ 
-              m: 1, 
-              borderRadius:"0px", 
-              width:"100px",
-              height:"100%",
-              objectFit: 'cover',
-            objectPosition: 'center' 
-            }}/>
+            <Avatar
+              src={Logo}
+              sx={{
+                m: 1,
+                borderRadius: "0px",
+                width: "100px",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+              }}
+            />
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              noValidate
+              onSubmit={handleSubmit(onSubmitHandler)}
+              sx={{ mt: 1 }}
+            >
               <TextField
                 margin="normal"
                 fullWidth

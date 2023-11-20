@@ -1,10 +1,10 @@
 import { createStore, combineReducers } from "redux";
-import { dashboardReducer } from "./reducer";
-
+import { createLeaveReducer, dashboardReducer } from "./reducer";
 
 const allReducers = combineReducers({
-    dashboard: dashboardReducer
-})
+  dashboard: dashboardReducer,
+  createLeave: createLeaveReducer
+});
 
 const store = createStore(allReducers);
 
