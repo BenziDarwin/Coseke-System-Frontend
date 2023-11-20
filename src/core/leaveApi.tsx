@@ -22,3 +22,14 @@ export const addLeaveType = async(leaveType: LeaveModel) => {
         return response;
     }
 }
+
+export const deleteLeaveType = async (id:number) => {
+    const response = await AxiosInstance
+    .post(`${leaveUrl}/leave/remove-leave/${id}`);
+    if(response.status == 200) {
+        console.log("Success!");
+        return response;
+    } else {
+        return response;
+    }
+}

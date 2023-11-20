@@ -20,8 +20,9 @@ import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
-import { addLeaveType, getLeaveTypes } from "../../core/leaveApi";
+import { addLeaveType, deleteLeaveType, getLeaveTypes } from "../../core/leaveApi";
 import { LeaveModel } from "../../models/leaveModel";
+import { getRoles } from "../../core/api";
 
 function CreateLeave() {
   const [open, setOpen] = React.useState(false);
@@ -33,12 +34,26 @@ function CreateLeave() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [rows, setRows] = React.useState<any[]>([]);
+  const [roles, setRoles] = React.useState<any[]>([]);
   const state = useSelector((state:any) => state.createLeave);
   const dispatch = useDispatch();
 
   useEffect(() => {
     ( async() => {
       const arr: any = await getLeaveTypes();
+      let res :any = await getRoles();
+      if(res !== undefined) {
+        let arr = res.map((val:{roleName:string}) => ({value:val.roleName.toLowerCase(), label:`${val.roleName.charAt(0).toUpperCase()}${val.roleName.slice(1).toLowerCase()}`}))
+        console.log(arr);
+        setRoles(arr);
+      } else {
+        console.log(res)
+        setNotification({
+          serverity: "error",
+          open: true,
+          message: "Something happened!",
+        });
+      }
       setRows(arr)
     })()    
   },[])
@@ -69,7 +84,18 @@ function CreateLeave() {
       minWidth: 150,
       editable: false,
       renderCell: (params) => {
-        return <><Button color="error" variant="contained">Delete</Button></>;
+        return <><Button color="error" onClick={async() => {
+          let res = await deleteLeaveType(parseInt(params.id.toString()));
+          if(res.status == 200) {
+            setNotification({
+              serverity: "success",
+              open: true,
+              message: "Leave deleted successFully!",
+            });
+
+          }
+        }
+        } variant="contained">Delete</Button></>;
       },
     },
   ];
@@ -231,13 +257,7 @@ function CreateLeave() {
               <Autocomplete
                 multiple
                 id="approvers"
-                options={[
-                  { label: "Administrator", value: "administrator" },
-                  { label: "Manager", value: "manager" },
-                  { label: "Supervisor", value: "supervisor" },
-                  { label: "Coordinator", value: "coordinator" },
-                  // Add more roles as needed
-                ]}
+                options={roles}
                 getOptionLabel={(option) => option.label || ""}
                 onChange={(_,value) => {
                   dispatch({type:"SET_APPROVERS", payload:value})

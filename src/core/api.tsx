@@ -1,5 +1,5 @@
 import axios from "axios";
-import { userUrl } from "./baseURLs";
+import { AxiosUserInstance, userUrl } from "./baseURLs";
 
 export const login = async ({
   email,
@@ -20,3 +20,9 @@ export const login = async ({
   }
   
 };
+
+
+export const getRoles = async () => {
+  let response = await AxiosUserInstance.get(`${userUrl}/roles/get-roles`);
+  return response.data;
+}
