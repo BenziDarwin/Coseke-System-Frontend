@@ -1,3 +1,4 @@
+import { ApplyLeaveModel } from "../models/applyLeaveModel";
 import { LeaveModel } from "../models/leaveModel";
 import { AxiosInstance, leaveUrl } from "./baseURLs"
 
@@ -32,4 +33,21 @@ export const deleteLeaveType = async (id:number) => {
     } else {
         return response;
     }
+}
+
+export const applyForLeave = async (apply:ApplyLeaveModel) => {
+    const response = await AxiosInstance
+    .post(`${leaveUrl}/apply-leave/apply`,
+    JSON.stringify(apply),{
+        headers: {
+            "Content-Type": "application/json",
+        }    
+    });
+    if(response.status == 200) {
+        console.log("Success!");
+        return response;
+    } else {
+        return response;
+    }
+
 }

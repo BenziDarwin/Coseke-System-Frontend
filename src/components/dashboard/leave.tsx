@@ -80,15 +80,15 @@ function Leave() {
   ];
 
   const validationSchema = object({
-    address: string().min(1, "Field is required!"),
-    startDate: string()
+    addressLeavePeriod: string().min(1, "Field is required!"),
+    start: string()
       .min(1, "Field is required!")
       .refine((val) => {
         var start = new Date(val);
         return start > new Date();
       }, "Date must be greater than today!"),
-    endDate: string().min(1, "Field is required!"),
-    leaveType: string().min(1, "Field is required!"),
+    end: string().min(1, "Field is required!"),
+    leave: string().min(1, "Field is required!"),
     reason: string().min(1, "Field is required!"),
   });
 
@@ -102,7 +102,7 @@ function Leave() {
 
   const onSubmitHandler: SubmitHandler<SignUpSchemaType> = (values) => {
     console.log(values);
-    if (new Date(values.startDate) >= new Date(values.endDate)) {
+    if (new Date(values.start) >= new Date(values.end)) {
       setNotification({
         serverity: "error",
         open: true,
@@ -137,7 +137,7 @@ function Leave() {
     ( async() => {
       const arr: any = await getLeaveTypes();
       const transformedArray: { value: string; label: string }[] = arr.map((val:any) => ({
-        value: val.name.toLowerCase().replace(/\s+/g, '_'),
+        value: val.name.toLowerCase().replace(/\s+/g, ' '),
         label: val.name.toLowerCase().split(' ')
           .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ')
@@ -196,8 +196,8 @@ function Leave() {
                     <Select
                       label="Leave Type"
                       id="leaveType"
-                      error={!!errors["leaveType"]?.message}
-                      {...register("leaveType")}
+                      error={!!errors["leave"]?.message}
+                      {...register("leave")}
                     >
                       {leaveTypes && leaveTypes.map((leave) => {
                         return(
@@ -206,7 +206,7 @@ function Leave() {
                       })}
                     </Select>
                     <FormHelperText sx={{ color: "red" }}>
-                      {errors["leaveType"] ? errors["leaveType"].message : ""}
+                      {errors["leave"] ? errors["leave"].message : ""}
                     </FormHelperText>
                   </FormControl>
                 </Grid>
@@ -222,9 +222,9 @@ function Leave() {
                 margin="normal"
                 variant="outlined"
                 placeholder="Enter the address you will be leaving to..."
-                error={!!errors["address"]}
-                helperText={errors["address"] ? errors["address"].message : ""}
-                {...register("address")}
+                error={!!errors["addressLeavePeriod"]}
+                helperText={errors["addressLeavePeriod"] ? errors["addressLeavePeriod"].message : ""}
+                {...register("addressLeavePeriod")}
               />
             </Grid>
             <Grid item xs={6}>
@@ -234,11 +234,11 @@ function Leave() {
                 type="datetime-local"
                 margin="normal"
                 variant="outlined"
-                error={!!errors["startDate"]}
+                error={!!errors["start"]}
                 helperText={
-                  errors["startDate"] ? errors["startDate"].message : ""
+                  errors["start"] ? errors["start"].message : ""
                 }
-                {...register("startDate")}
+                {...register("start")}
               />
             </Grid>
             <Grid item xs={6}>
@@ -248,9 +248,9 @@ function Leave() {
                 type="datetime-local"
                 margin="normal"
                 variant="outlined"
-                error={!!errors["endDate"]}
-                helperText={errors["endDate"] ? errors["endDate"].message : ""}
-                {...register("endDate")}
+                error={!!errors["end"]}
+                helperText={errors["end"] ? errors["end"].message : ""}
+                {...register("end")}
               />
             </Grid>
             <Grid item xs={12}>
