@@ -20,7 +20,7 @@ import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
-import { addLeaveType, deleteLeaveType, getLeaveTypes } from "../../core/leaveApi";
+import { addLeaveType, deleteLeaveType, getAllApplications, getLeaveTypes } from "../../core/leaveApi";
 import { LeaveModel } from "../../models/leaveModel";
 import { getRoles } from "../../core/api";
 

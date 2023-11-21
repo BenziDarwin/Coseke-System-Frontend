@@ -51,3 +51,18 @@ export const applyForLeave = async (apply:ApplyLeaveModel) => {
     }
 
 }
+
+export const getAllApplications = async () => {
+    const response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-all`,{
+        headers: {
+            "Content-Type": "application/json",
+        }    
+    })
+    if(response.status == 200) {
+        console.log("Success!");
+        return response.data;
+    } else {
+        return response;
+    }
+
+}

@@ -19,7 +19,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { object, string, z } from "zod";
-import { getLeaveTypes } from "../../core/leaveApi";
+import { applyForLeave, getAllApplications, getLeaveTypes } from "../../core/leaveApi";
 
 function Leave() {
   const [open, setOpen] = React.useState(false);
@@ -100,8 +100,7 @@ function Leave() {
     formState: { errors, isSubmitSuccessful },
   } = useForm<SignUpSchemaType>({ resolver: zodResolver(validationSchema) });
 
-  const onSubmitHandler: SubmitHandler<SignUpSchemaType> = (values) => {
-    console.log(values);
+  const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
     if (new Date(values.start) >= new Date(values.end)) {
       setNotification({
         serverity: "error",
@@ -110,16 +109,26 @@ function Leave() {
       });
       return;
     }
+    let res = await applyForLeave({...values})
+    if(res.status == 200) {
+      setNotification({
+        serverity: "success",
+        open: true,
+        message: "Your Leave has been submitted successfully!",
+      });
+    } else {
+      setNotification({
+        serverity: "error",
+        open: true,
+        message: res.data,
+      });
+    }
     setNotification({
       serverity: "success",
       open: true,
       message: "Your Leave has been submitted successfully!",
     });
     handleClose();
-    new Promise((res) => setTimeout(res, 1000));
-    let newvalue = { ...values, id: Math.round(Math.random() * 20) };
-    setRows([...rows, newvalue]);
-    console.log(rows);
   };
 
   const style = {
@@ -142,8 +151,13 @@ function Leave() {
           .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ')
       }));
+      let leaveApplications = await getAllApplications();
+      console.log(leaveApplications)
+      setRows(leaveApplications)
+
       setLeaveTypes(transformedArray)
-    })()    
+    })() 
+       
   },[])
 
   return (
