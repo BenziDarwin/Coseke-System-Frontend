@@ -40,11 +40,17 @@ function Leave() {
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1, minWidth: 90 },
     {
-      field: "leaveType",
+      field: "leave",
       headerName: "Leave Type",
       flex: 1,
       minWidth: 150,
       editable: false,
+      renderCell: (val) => {
+        return <>{val.row.leave.name.toLowerCase().split(' ')
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    }</>;
+      },
     },
     {
       field: "startDate",
