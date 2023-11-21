@@ -23,7 +23,7 @@ import * as React from "react";
 import Home from "../../components/dashboard/home";
 import Leave from "../../components/dashboard/leave";
 import { Collapse } from "@mui/material";
-import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
+import { ExpandLess, ExpandMore, StarBorder, Work } from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -162,6 +162,7 @@ export default function Dashboard() {
               icon: <TimeToLeaveIcon />,
             },
             { value: "hr", title: "Human Resource", icon: <PersonIcon /> },
+            { value: "roles", title: "Add Roles", icon: <Work /> },
           ].map((listItem: any, index: any) => (
             <ListItem key={index} disablePadding sx={{ display: "block" }}>
               {listItem.value == "hr" ? (

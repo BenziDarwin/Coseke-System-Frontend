@@ -14,7 +14,7 @@ export const login = async ({
   });
   if(response.status == 200) {
     sessionStorage.setItem("token",response.data.token);
-    sessionStorage.setItem("user", response.data.user);
+    sessionStorage.setItem("user", JSON.stringify(response.data.user));
     return response;
   } else {
     return response;

@@ -2,6 +2,7 @@ import CreateLeave from "../components/dashboard/createLeave";
 import Home from "../components/dashboard/home";
 import HumanResource from "../components/dashboard/humanResource";
 import Leave from "../components/dashboard/leave";
+import Roles from "../pages/roles";
 
 const initialState = {
   currentPage: <Home />,
@@ -17,6 +18,8 @@ export const dashboardReducer = (state: any = initialState, actions: any) => {
       return { ...state, currentPage: <CreateLeave /> };
     case "hr":
       return { ...state, currentPage: <HumanResource /> };
+    case "roles":
+      return {...state, currentPage: <Roles/>};
     default:
       return state;
   }
