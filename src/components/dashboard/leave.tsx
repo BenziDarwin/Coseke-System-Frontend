@@ -19,11 +19,17 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { object, string, z } from "zod";
-import { applyForLeave, getAllApplications, getLeaveTypes } from "../../core/leaveApi";
+import {
+  applyForLeave,
+  getAllApplications,
+  getLeaveTypes,
+} from "../../core/leaveApi";
+import { useNavigate } from "react-router-dom";
 
 function Leave() {
   const [open, setOpen] = React.useState(false);
   const [leaveTypes, setLeaveTypes] = React.useState<any[]>([]);
+  const navigate = useNavigate();
   const [notification, setNotification] = React.useState<{
     serverity: AlertColor;
     open: boolean;
@@ -46,10 +52,17 @@ function Leave() {
       minWidth: 150,
       editable: false,
       renderCell: (val) => {
-        return <>{val.row.leave.name.toLowerCase().split(' ')
-        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-    }</>;
+        return (
+          <>
+            {val.row.leave.name
+              .toLowerCase()
+              .split(" ")
+              .map(
+                (word: string) => word.charAt(0).toUpperCase() + word.slice(1),
+              )
+              .join(" ")}
+          </>
+        );
       },
     },
     {
@@ -59,7 +72,7 @@ function Leave() {
       minWidth: 110,
       editable: false,
       renderCell: (val) => {
-        const date = new Date(val.row.startDate).toUTCString();
+        const date = new Date(val.row.startDate).toDateString();
         return <>{date}</>;
       },
     },
@@ -71,7 +84,7 @@ function Leave() {
       minWidth: 110,
       editable: false,
       renderCell: (val) => {
-        const date = new Date(val.row.endDate).toUTCString();
+        const date = new Date(val.row.endDate).toDateString();
         return <>{date}</>;
       },
     },
@@ -82,6 +95,10 @@ function Leave() {
       flex: 1,
       minWidth: 110,
       editable: false,
+      renderCell:(val) => { return(
+        <>{`${val.row.stage.charAt(0).toUpperCase()}${val.row.stage.slice(1).toLowerCase()}`}</>
+        )
+        }
     },
   ];
 
@@ -115,8 +132,8 @@ function Leave() {
       });
       return;
     }
-    let res = await applyForLeave({...values})
-    if(res.status == 200) {
+    let res = await applyForLeave({ ...values });
+    if (res.status == 200) {
       setNotification({
         serverity: "success",
         open: true,
@@ -134,6 +151,7 @@ function Leave() {
       open: true,
       message: "Your Leave has been submitted successfully!",
     });
+    navigate(0);
     handleClose();
   };
 
@@ -149,22 +167,25 @@ function Leave() {
   };
 
   useEffect(() => {
-    ( async() => {
+    (async () => {
       const arr: any = await getLeaveTypes();
-      const transformedArray: { value: string; label: string }[] = arr.map((val:any) => ({
-        value: val.name.toLowerCase().replace(/\s+/g, ' '),
-        label: val.name.toLowerCase().split(' ')
-          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ')
-      }));
+      const transformedArray: { value: string; label: string }[] = arr.map(
+        (val: any) => ({
+          value: val.name.toLowerCase().replace(/\s+/g, " "),
+          label: val.name
+            .toLowerCase()
+            .split(" ")
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
+        }),
+      );
       let leaveApplications = await getAllApplications();
-      console.log(leaveApplications)
-      setRows(leaveApplications)
+      console.log(leaveApplications);
+      setRows(leaveApplications);
 
-      setLeaveTypes(transformedArray)
-    })() 
-       
-  },[])
+      setLeaveTypes(transformedArray);
+    })();
+  }, []);
 
   return (
     <Box>
@@ -174,7 +195,7 @@ function Leave() {
             Leave Application
           </Typography>
         </Grid>
-        <Grid xs={2}>
+        <Grid item xs={2}>
           <Button onClick={handleOpen} variant="contained">
             Apply for leave
           </Button>
@@ -219,11 +240,14 @@ function Leave() {
                       error={!!errors["leave"]?.message}
                       {...register("leave")}
                     >
-                      {leaveTypes && leaveTypes.map((leave) => {
-                        return(
-                          <MenuItem value={leave.value}>{leave.label}</MenuItem>
-                        )
-                      })}
+                      {leaveTypes &&
+                        leaveTypes.map((leave) => {
+                          return (
+                            <MenuItem value={leave.value}>
+                              {leave.label}
+                            </MenuItem>
+                          );
+                        })}
                     </Select>
                     <FormHelperText sx={{ color: "red" }}>
                       {errors["leave"] ? errors["leave"].message : ""}
@@ -243,7 +267,11 @@ function Leave() {
                 variant="outlined"
                 placeholder="Enter the address you will be leaving to..."
                 error={!!errors["addressLeavePeriod"]}
-                helperText={errors["addressLeavePeriod"] ? errors["addressLeavePeriod"].message : ""}
+                helperText={
+                  errors["addressLeavePeriod"]
+                    ? errors["addressLeavePeriod"].message
+                    : ""
+                }
                 {...register("addressLeavePeriod")}
               />
             </Grid>
@@ -255,9 +283,7 @@ function Leave() {
                 margin="normal"
                 variant="outlined"
                 error={!!errors["start"]}
-                helperText={
-                  errors["start"] ? errors["start"].message : ""
-                }
+                helperText={errors["start"] ? errors["start"].message : ""}
                 {...register("start")}
               />
             </Grid>

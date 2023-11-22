@@ -1,9 +1,14 @@
 import { createStore, combineReducers } from "redux";
-import { createLeaveReducer, dashboardReducer } from "./reducer";
+import {
+  createLeaveReducer,
+  dashboardReducer,
+  permissionsReducer,
+} from "./reducer";
 
 const allReducers = combineReducers({
   dashboard: dashboardReducer,
-  createLeave: createLeaveReducer
+  createLeave: createLeaveReducer,
+  permissions: permissionsReducer,
 });
 
 const store = createStore(allReducers);

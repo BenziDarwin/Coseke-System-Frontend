@@ -13,19 +13,26 @@ import {
   Modal,
   Snackbar,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
-import { addLeaveType, deleteLeaveType, getAllApplications, getLeaveTypes } from "../../core/leaveApi";
+import {
+  addLeaveType,
+  deleteLeaveType,
+  getAllApplications,
+  getLeaveTypes,
+} from "../../core/leaveApi";
 import { LeaveModel } from "../../models/leaveModel";
 import { getRoles } from "../../core/api";
+import { useNavigate } from "react-router-dom";
 
 function CreateLeave() {
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
   const [notification, setNotification] = React.useState<{
     serverity: AlertColor;
     open: boolean;
@@ -35,67 +42,99 @@ function CreateLeave() {
   const handleClose = () => setOpen(false);
   const [rows, setRows] = React.useState<any[]>([]);
   const [roles, setRoles] = React.useState<any[]>([]);
-  const state = useSelector((state:any) => state.createLeave);
+  const state = useSelector((state: any) => state.createLeave);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    ( async() => {
+    (async () => {
       const arr: any = await getLeaveTypes();
-      let res :any = await getRoles();
-      if(res !== undefined) {
-        let arr = res.map((val:{roleName:string}) => ({value:val.roleName.toLowerCase(), label:`${val.roleName.charAt(0).toUpperCase()}${val.roleName.slice(1).toLowerCase()}`}))
+      let res: any = await getRoles();
+      if (res !== undefined) {
+        let arr = res.map((val: { roleName: string }) => ({
+          value: val.roleName.toLowerCase(),
+          label: `${val.roleName.charAt(0).toUpperCase()}${val.roleName
+            .slice(1)
+            .toLowerCase()}`,
+        }));
         console.log(arr);
         setRoles(arr);
       } else {
-        console.log(res)
+        console.log(res);
         setNotification({
           serverity: "error",
           open: true,
           message: "Something happened!",
         });
       }
-      setRows(arr)
-    })()    
-  },[])
+      setRows(arr);
+    })();
+  }, []);
 
   const handleNotification = () => {
     setNotification({ serverity: "success", open: false, message: "" });
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', flex: 1, maxWidth: 50, editable: false },
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 150, editable: false },
-    { field: 'duration', headerName: 'Duration', flex: 1, minWidth: 110, editable: false },
-    { field: 'maxDuration', headerName: 'Max Duration', flex: 1, minWidth: 110, editable: false },
+    { field: "id", headerName: "ID", flex: 1, maxWidth: 50, editable: false },
     {
-      field: 'approvers',
-      headerName: 'Approvers',
+      field: "name",
+      headerName: "Name",
+      flex: 1,
+      minWidth: 150,
+      editable: false,
+    },
+    {
+      field: "duration",
+      headerName: "Duration",
+      flex: 1,
+      minWidth: 110,
+      editable: false,
+    },
+    {
+      field: "maxDuration",
+      headerName: "Max Duration",
+      flex: 1,
+      minWidth: 110,
+      editable: false,
+    },
+    {
+      field: "approvers",
+      headerName: "Approvers",
       flex: 1,
       minWidth: 150,
       editable: false,
       renderCell: (params) => {
-        return <>{(params.row.approvers as string[]).join(', ')}</>;
+        return <>{(params.row.approvers as string[]).join(", ")}</>;
       },
     },
     {
-      field: 'Delete',
-      headerName: 'Delete',
+      field: "Delete",
+      headerName: "Delete",
       flex: 1,
       minWidth: 150,
       editable: false,
       renderCell: (params) => {
-        return <><Button color="error" onClick={async() => {
-          let res = await deleteLeaveType(parseInt(params.id.toString()));
-          if(res.status == 200) {
-            setNotification({
-              serverity: "success",
-              open: true,
-              message: "Leave deleted successFully!",
-            });
-
-          }
-        }
-        } variant="contained">Delete</Button></>;
+        return (
+          <>
+            <Button
+              color="error"
+              onClick={async () => {
+                let res = await deleteLeaveType(parseInt(params.id.toString()));
+                if (res.status == 200) {
+                  setNotification({
+                    serverity: "success",
+                    open: true,
+                    message: "Leave deleted successFully!",
+                  });
+                  navigate(0);
+                }
+              }}
+              variant="contained"
+            >
+              Delete
+            </Button>
+          </>
+        );
       },
     },
   ];
@@ -103,18 +142,20 @@ function CreateLeave() {
   const isInteger = (val: string) => /^\d+$/.test(val);
   const validationSchema = z.object({
     name: z.string().min(1, { message: "Field is required!" }),
-    duration: z. string()
-    .min(1, "Field is required!")
-    .refine((val) => isInteger(val), {
-      message: "Must be a valid Number.",
-    })
-    .transform((val) => parseInt(val, 10)),
-    maxDuration: z. string()
-    .min(1, "Field is required!")
-    .refine((val) => isInteger(val), {
-      message: "Must be a valid Number.",
-    })
-    .transform((val) => parseInt(val, 10)),
+    duration: z
+      .string()
+      .min(1, "Field is required!")
+      .refine((val) => isInteger(val), {
+        message: "Must be a valid Number.",
+      })
+      .transform((val) => parseInt(val, 10)),
+    maxDuration: z
+      .string()
+      .min(1, "Field is required!")
+      .refine((val) => isInteger(val), {
+        message: "Must be a valid Number.",
+      })
+      .transform((val) => parseInt(val, 10)),
   });
 
   type SignUpSchemaType = z.infer<typeof validationSchema>;
@@ -126,7 +167,7 @@ function CreateLeave() {
   } = useForm<SignUpSchemaType>({ resolver: zodResolver(validationSchema) });
 
   const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
-    if(state.approvers?.length <= 0 ) {
+    if (state.approvers?.length <= 0) {
       setNotification({
         serverity: "error",
         open: true,
@@ -134,10 +175,14 @@ function CreateLeave() {
       });
       return;
     }
-    
-    let newvalue:LeaveModel = {...values, approvers:state.approvers.map((val:any) => val.label)};
+
+    let newvalue: LeaveModel = {
+      ...values,
+      name:values.name.toUpperCase(),
+      approvers: state.approvers.map((val: any) => val.label.toUpperCase()),
+    };
     let res = await addLeaveType(newvalue);
-    if(res.status == 200) {
+    if (res.status == 200) {
       setNotification({
         serverity: "success",
         open: true,
@@ -151,6 +196,7 @@ function CreateLeave() {
         message: "Something Happened!",
       });
     }
+    navigate(0);
     handleClose();
   };
 
@@ -231,7 +277,9 @@ function CreateLeave() {
                 margin="normal"
                 variant="outlined"
                 error={!!errors["duration"]}
-                helperText={errors["duration"] ? errors["duration"].message : ""}
+                helperText={
+                  errors["duration"] ? errors["duration"].message : ""
+                }
                 {...register("duration")}
               />
             </Grid>
@@ -259,14 +307,11 @@ function CreateLeave() {
                 id="approvers"
                 options={roles}
                 getOptionLabel={(option) => option.label || ""}
-                onChange={(_,value) => {
-                  dispatch({type:"SET_APPROVERS", payload:value})
+                onChange={(_, value) => {
+                  dispatch({ type: "SET_APPROVERS", payload: value });
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} 
-                  label="Approvers"
-                  variant="outlined"
-                 />
+                  <TextField {...params} label="Approvers" variant="outlined" />
                 )}
                 renderOption={(props, option, { selected }) => (
                   <li {...props}>

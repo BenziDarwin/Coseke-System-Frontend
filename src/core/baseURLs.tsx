@@ -9,12 +9,15 @@ export const AxiosInstance = axios.create({
   headers: {
     Authorization: `${sessionStorage.getItem("token")}`,
     Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
 
 export const AxiosUserInstance = axios.create({
+  
   headers: {
     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
     Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
