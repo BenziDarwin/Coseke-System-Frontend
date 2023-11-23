@@ -1,3 +1,4 @@
+import { ApproveLeave } from "../models/ApproveLeaveModel";
 import { ApplyLeaveModel } from "../models/applyLeaveModel";
 import { LeaveModel } from "../models/leaveModel";
 import { AxiosInstance, leaveUrl } from "./baseURLs";
@@ -10,7 +11,7 @@ export const getLeaveTypes = async () => {
 export const addLeaveType = async (leaveType: LeaveModel) => {
   const response = await AxiosInstance.post(
     `${leaveUrl}/leave/add-leave`,
-    JSON.stringify(leaveType)
+    JSON.stringify(leaveType),
   );
   if (response.status == 200) {
     console.log("Success!");
@@ -60,9 +61,36 @@ export const getAllApplications = async () => {
   }
 };
 
-
 export const getApproverApplications = async () => {
-  const response = await AxiosInstance.get(`${leaveUrl}/apply-leave/approver-applications`);
+  const response = await AxiosInstance.get(
+    `${leaveUrl}/apply-leave/approver-applications`,
+  );
+  if (response.status == 200) {
+    console.log("Success!");
+    return response.data;
+  } else {
+    return response;
+  }
+};
+
+export const approveLeave = async (approve: ApproveLeave) => {
+  const response = await AxiosInstance.post(
+    `${leaveUrl}/apply-leave/approve`,
+    JSON.stringify(approve),
+  );
+  if (response.status == 200) {
+    console.log("Success!");
+    return response.data;
+  } else {
+    return response;
+  }
+};
+
+export const handleIssue = async (issue: any) => {
+  const response = await AxiosInstance.post(
+    `${leaveUrl}/apply-leave/handle-issue`,
+    JSON.stringify(issue),
+  );
   if (response.status == 200) {
     console.log("Success!");
     return response.data;

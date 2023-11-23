@@ -10,11 +10,7 @@ import { deleteRole, getRoles, updatePermissions } from "../../core/api";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const RolesCard = ({
-  permissionList,
-}: {
-  permissionList?: IModule;
-}) => {
+const RolesCard = ({ permissionList }: { permissionList?: IModule }) => {
   const [roles, setRoles] = useState([]);
   const perm = useSelector((state: any) => state.permissions);
   const dispatch = useDispatch();
@@ -45,13 +41,13 @@ const RolesCard = ({
     console.log(response);
   };
 
-  const deleteHandler = async (role:string) => {
-    let res = await deleteRole({roleName:role});
-    if(res.status == 200) {
+  const deleteHandler = async (role: string) => {
+    let res = await deleteRole({ roleName: role });
+    if (res.status == 200) {
       console.log("Success");
     }
     navigate(0);
-  }
+  };
 
   return (
     <Grid container xs={12} spacing={2}>
@@ -82,9 +78,13 @@ const RolesCard = ({
                     startIcon={<DeleteOutlineIcon />}
                     variant="outlined"
                     color="error"
-                    onClick={() => deleteHandler(`${role.roleName.charAt(0).toUpperCase()}${role.roleName
-                      .slice(1)
-                      .toLowerCase()}`)}
+                    onClick={() =>
+                      deleteHandler(
+                        `${role.roleName.charAt(0).toUpperCase()}${role.roleName
+                          .slice(1)
+                          .toLowerCase()}`,
+                      )
+                    }
                     size="small"
                   >
                     Delete

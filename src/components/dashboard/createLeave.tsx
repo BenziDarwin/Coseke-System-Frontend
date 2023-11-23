@@ -178,7 +178,7 @@ function CreateLeave() {
 
     let newvalue: LeaveModel = {
       ...values,
-      name:values.name.toUpperCase(),
+      name: values.name.toUpperCase(),
       approvers: state.approvers.map((val: any) => val.label.toUpperCase()),
     };
     let res = await addLeaveType(newvalue);

@@ -14,7 +14,6 @@ export const AxiosInstance = axios.create({
 });
 
 export const AxiosUserInstance = axios.create({
-  
   headers: {
     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
     Accept: "application/json",

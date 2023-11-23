@@ -23,19 +23,22 @@ import {
   applyForLeave,
   getAllApplications,
   getLeaveTypes,
+  handleIssue,
 } from "../../core/leaveApi";
 import { useNavigate } from "react-router-dom";
+import { Edit } from "@mui/icons-material";
 
 function Leave() {
   const [open, setOpen] = React.useState(false);
   const [leaveTypes, setLeaveTypes] = React.useState<any[]>([]);
+  const [data, setData] = React.useState<any>();
+  const [form, setForm] = React.useState<string>("apply");
   const navigate = useNavigate();
   const [notification, setNotification] = React.useState<{
     serverity: AlertColor;
     open: boolean;
     message: string;
   }>({ serverity: "success", open: false, message: "" });
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [rows, setRows] = React.useState<any[]>([]);
 
@@ -95,10 +98,39 @@ function Leave() {
       flex: 1,
       minWidth: 110,
       editable: false,
-      renderCell:(val) => { return(
-        <>{`${val.row.stage.charAt(0).toUpperCase()}${val.row.stage.slice(1).toLowerCase()}`}</>
-        )
-        }
+      renderCell: (val) => {
+        return (
+          <>{`${val.row?.stage.charAt(0).toUpperCase()}${val.row?.stage
+            .slice(1)
+            .toLowerCase()}`}</>
+        );
+      },
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      // type: 'number',
+      flex: 1,
+      minWidth: 110,
+      editable: false,
+      renderCell: (val) => {
+        return (
+          <>
+            <Button
+              size="small"
+              disabled={val.row.stage == "Issue Raised!" ? false : true}
+              onClick={() => {
+                openHandler(true, "form", val.row);
+                console.log(data);
+              }}
+              variant="contained"
+              color="primary"
+            >
+              <Edit />
+            </Button>
+          </>
+        );
+      },
     },
   ];
 
@@ -115,13 +147,22 @@ function Leave() {
     reason: string().min(1, "Field is required!"),
   });
 
+  const editSchema = object({
+    reason: string().min(1, "Field is required!"),
+  });
+
   type SignUpSchemaType = z.infer<typeof validationSchema>;
 
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<SignUpSchemaType>({ resolver: zodResolver(validationSchema) });
+  } = useForm<SignUpSchemaType>({
+    resolver:
+      form == "apply" ? zodResolver(validationSchema) : zodResolver(editSchema),
+  });
 
   const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
     if (new Date(values.start) >= new Date(values.end)) {
@@ -155,6 +196,25 @@ function Leave() {
     handleClose();
   };
 
+  const onEditHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
+    let res = await handleIssue(values);
+    console.log(res);
+    if (res.result == "success") {
+      setNotification({
+        serverity: "success",
+        open: true,
+        message: "Your Leave has been submitted successfully!",
+      });
+      handleClose();
+    } else {
+      setNotification({
+        serverity: "error",
+        open: true,
+        message: `Error: ${res.data}`,
+      });
+    }
+  };
+
   const style = {
     position: "absolute" as "absolute",
     top: "50%",
@@ -185,7 +245,13 @@ function Leave() {
 
       setLeaveTypes(transformedArray);
     })();
-  }, []);
+  }, [data]);
+
+  const openHandler = (open: boolean, form: string, data?: any) => {
+    reset();
+    setOpen(open);
+    setForm(form);
+  };
 
   return (
     <Box>
@@ -196,7 +262,10 @@ function Leave() {
           </Typography>
         </Grid>
         <Grid item xs={2}>
-          <Button onClick={handleOpen} variant="contained">
+          <Button
+            onClick={() => openHandler(true, "apply")}
+            variant="contained"
+          >
             Apply for leave
           </Button>
         </Grid>
@@ -222,122 +291,165 @@ function Leave() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box
-          component="form"
-          sx={style}
-          onSubmit={handleSubmit(onSubmitHandler)}
-          maxWidth="sm"
-        >
-          <Grid container spacing={1}>
-            <Grid item xs={6}>
-              <Grid container spacing={1}>
-                <Grid item xs={12}>
-                  <InputLabel sx={{ marginTop: "10px" }}>Leave Type</InputLabel>
-                  <FormControl fullWidth variant="outlined" margin="normal">
-                    <Select
-                      label="Leave Type"
-                      id="leaveType"
-                      error={!!errors["leave"]?.message}
-                      {...register("leave")}
+        {form == "apply" ? (
+          <Box
+            component="form"
+            sx={style}
+            onSubmit={handleSubmit(onSubmitHandler)}
+            maxWidth="sm"
+          >
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>Leave Type</InputLabel>
+                <FormControl fullWidth variant="outlined" margin="normal">
+                  <Select
+                    label="Leave Type"
+                    id="leaveType"
+                    error={!!errors["leave"]?.message}
+                    {...register("leave")}
+                  >
+                    {leaveTypes &&
+                      leaveTypes.map((leave) => {
+                        return (
+                          <MenuItem value={leave.value}>{leave.label}</MenuItem>
+                        );
+                      })}
+                  </Select>
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors["leave"] ? errors["leave"].message : ""}
+                  </FormHelperText>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>
+                  Address during leave period
+                </InputLabel>
+                <TextField
+                  fullWidth
+                  label="Address during leave period"
+                  margin="normal"
+                  variant="outlined"
+                  placeholder="Enter the address you will be leaving to..."
+                  error={!!errors["addressLeavePeriod"]}
+                  helperText={
+                    errors["addressLeavePeriod"]
+                      ? errors["addressLeavePeriod"].message
+                      : ""
+                  }
+                  {...register("addressLeavePeriod")}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>Start Date</InputLabel>
+                <TextField
+                  fullWidth
+                  type="datetime-local"
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors["start"]}
+                  helperText={errors["start"] ? errors["start"].message : ""}
+                  {...register("start")}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>End Date</InputLabel>
+                <TextField
+                  fullWidth
+                  type="datetime-local"
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors["end"]}
+                  helperText={errors["end"] ? errors["end"].message : ""}
+                  {...register("end")}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputLabel sx={{ marginTop: "10px" }}>Reason</InputLabel>
+                <TextField
+                  fullWidth
+                  label="Reason"
+                  multiline
+                  rows={4}
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors["reason"]}
+                  helperText={errors["reason"] ? errors["reason"].message : ""}
+                  {...register("reason")}
+                />
+                <Grid container spacing={2} marginTop={"20px"}>
+                  <Grid item xs={6}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
                     >
-                      {leaveTypes &&
-                        leaveTypes.map((leave) => {
-                          return (
-                            <MenuItem value={leave.value}>
-                              {leave.label}
-                            </MenuItem>
-                          );
-                        })}
-                    </Select>
-                    <FormHelperText sx={{ color: "red" }}>
-                      {errors["leave"] ? errors["leave"].message : ""}
-                    </FormHelperText>
-                  </FormControl>
+                      Submit
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      type="submit"
+                      onClick={handleClose}
+                      variant="contained"
+                      color="error"
+                      fullWidth
+                    >
+                      Cancel
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <InputLabel sx={{ marginTop: "10px" }}>
-                Address during leave period
-              </InputLabel>
-              <TextField
-                fullWidth
-                label="Address during leave period"
-                margin="normal"
-                variant="outlined"
-                placeholder="Enter the address you will be leaving to..."
-                error={!!errors["addressLeavePeriod"]}
-                helperText={
-                  errors["addressLeavePeriod"]
-                    ? errors["addressLeavePeriod"].message
-                    : ""
-                }
-                {...register("addressLeavePeriod")}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputLabel sx={{ marginTop: "10px" }}>Start Date</InputLabel>
-              <TextField
-                fullWidth
-                type="datetime-local"
-                margin="normal"
-                variant="outlined"
-                error={!!errors["start"]}
-                helperText={errors["start"] ? errors["start"].message : ""}
-                {...register("start")}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <InputLabel sx={{ marginTop: "10px" }}>End Date</InputLabel>
-              <TextField
-                fullWidth
-                type="datetime-local"
-                margin="normal"
-                variant="outlined"
-                error={!!errors["end"]}
-                helperText={errors["end"] ? errors["end"].message : ""}
-                {...register("end")}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <InputLabel sx={{ marginTop: "10px" }}>Reason</InputLabel>
-              <TextField
-                fullWidth
-                label="Reason"
-                multiline
-                rows={4}
-                margin="normal"
-                variant="outlined"
-                error={!!errors["reason"]}
-                helperText={errors["reason"] ? errors["reason"].message : ""}
-                {...register("reason")}
-              />
-              <Grid container spacing={2} marginTop={"20px"}>
-                <Grid item xs={6}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    type="submit"
-                    onClick={handleClose}
-                    variant="contained"
-                    color="error"
-                    fullWidth
-                  >
-                    Cancel
-                  </Button>
+          </Box>
+        ) : (
+          <Box
+            component="form"
+            sx={style}
+            onSubmit={handleSubmit(onEditHandler)}
+            maxWidth="sm"
+          >
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <InputLabel sx={{ marginTop: "10px" }}>Reason</InputLabel>
+                <TextField
+                  fullWidth
+                  label="Reason"
+                  multiline
+                  rows={4}
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors["reason"]}
+                  helperText={errors["reason"] ? errors["reason"].message : ""}
+                  {...register("reason")}
+                />
+                <Grid container spacing={2} marginTop={"20px"}>
+                  <Grid item xs={6}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                    >
+                      Submit
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      type="submit"
+                      onClick={handleClose}
+                      variant="contained"
+                      color="error"
+                      fullWidth
+                    >
+                      Cancel
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </Box>
+          </Box>
+        )}
       </Modal>
       <Snackbar
         open={notification.open}

@@ -127,19 +127,17 @@ const Roles = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<SignUpSchemaType>({ resolver: zodResolver(validationSchema) });
 
-  const onSubmit = async (values:any) => {
+  const onSubmit = async (values: any) => {
     console.log(values);
-    let role:IRoleCreate = {...values, permissions:[], activities:[]}
+    let role: IRoleCreate = { ...values, permissions: [], activities: [] };
     let res = await createRole(role);
-    if(res.status == 200) {
-        console.log("Success!");
-    navigate(0);
+    if (res.status == 200) {
+      console.log("Success!");
+      navigate(0);
     }
     handleClose();
     navigate(0);
   };
-
-
 
   return (
     <Box>
@@ -231,9 +229,7 @@ const Roles = () => {
         title={`${currentRole} Permissions Management`}
       />
 
-      <RolesCard
-        permissionList={permissionList}
-      />
+      <RolesCard permissionList={permissionList} />
     </Box>
   );
 };
