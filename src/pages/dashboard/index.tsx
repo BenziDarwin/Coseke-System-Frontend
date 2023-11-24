@@ -146,8 +146,8 @@ export default function Dashboard() {
               </Typography>
             </Grid>
             <Grid item xs={3}>
-              <Grid container>
-                <Grid item xs={8}>
+              <Grid container spacing={2}>
+                <Grid item justifyContent={"center"} flexDirection="column" display="flex" xs={8}>
                   {JSON.parse(sessionStorage.getItem("user") || "")?.role
                     ?.roleName +
                     ",  " +
@@ -156,7 +156,7 @@ export default function Dashboard() {
                     " " +
                     JSON.parse(sessionStorage.getItem("user") || "")?.lastname}
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item justifyContent={"center"} flexDirection="column" display="flex"  xs={4}>
                   <Button
                     color="info"
                     variant="contained"
