@@ -107,6 +107,14 @@ function Leave() {
       },
     },
     {
+      field: "comment",
+      headerName: "Comment",
+      // type: 'number',
+      flex: 1,
+      minWidth: 110,
+      editable: false
+    },
+    {
       field: "actions",
       headerName: "Actions",
       // type: 'number',
