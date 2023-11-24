@@ -141,27 +141,36 @@ export default function Dashboard() {
           </IconButton>
           <Grid container>
             <Grid item xs={9}>
-            <Typography variant="h6" noWrap component="div">
-            COSEKE
-          </Typography>
+              <Typography variant="h6" noWrap component="div">
+                COSEKE
+              </Typography>
             </Grid>
             <Grid item xs={3}>
               <Grid container>
                 <Grid item xs={8}>
-                  {JSON.parse(sessionStorage.getItem("user")||"")?.role?.roleName +",  "+JSON.parse(sessionStorage.getItem("user")||"")?.firstname +" "+JSON.parse(sessionStorage.getItem("user")||"")?.lastname}
+                  {JSON.parse(sessionStorage.getItem("user") || "")?.role
+                    ?.roleName +
+                    ",  " +
+                    JSON.parse(sessionStorage.getItem("user") || "")
+                      ?.firstname +
+                    " " +
+                    JSON.parse(sessionStorage.getItem("user") || "")?.lastname}
                 </Grid>
                 <Grid item xs={4}>
-                  <Button color="info" variant="contained" onClick={() => {
-                    sessionStorage.clear();
-                    navigate("/");
-                  }}>
+                  <Button
+                    color="info"
+                    variant="contained"
+                    onClick={() => {
+                      sessionStorage.clear();
+                      navigate("/");
+                    }}
+                  >
                     Logout
                   </Button>
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
-       
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>

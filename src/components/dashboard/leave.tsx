@@ -112,7 +112,7 @@ function Leave() {
       // type: 'number',
       flex: 1,
       minWidth: 110,
-      editable: false
+      editable: false,
     },
     {
       field: "actions",
@@ -164,7 +164,7 @@ function Leave() {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<SignUpSchemaType>({
-    resolver:zodResolver(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
