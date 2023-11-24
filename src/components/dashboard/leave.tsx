@@ -155,10 +155,6 @@ function Leave() {
     reason: string().min(1, "Field is required!"),
   });
 
-  const editSchema = object({
-    reason: string().min(1, "Field is required!"),
-  });
-
   type SignUpSchemaType = z.infer<typeof validationSchema>;
 
   const {
@@ -168,8 +164,7 @@ function Leave() {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<SignUpSchemaType>({
-    resolver:
-      form == "apply" ? zodResolver(validationSchema) : zodResolver(editSchema),
+    resolver:zodResolver(validationSchema),
   });
 
   const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
@@ -205,20 +200,26 @@ function Leave() {
   };
 
   const onEditHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
+    if (new Date(values.start) >= new Date(values.end)) {
+      setNotification({
+        serverity: "error",
+        open: true,
+        message: "End date has to be later than start date!",
+      });
+      return;
+    }
     let res = await handleIssue(values);
-    console.log(res);
-    if (res.result == "success") {
+    if (res.status == 200) {
       setNotification({
         serverity: "success",
         open: true,
         message: "Your Leave has been submitted successfully!",
       });
-      handleClose();
     } else {
       setNotification({
         serverity: "error",
         open: true,
-        message: `Error: ${res.data}`,
+        message: res.data,
       });
     }
   };
@@ -418,6 +419,70 @@ function Leave() {
             maxWidth="sm"
           >
             <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>Leave Type</InputLabel>
+                <FormControl fullWidth variant="outlined" margin="normal">
+                  <Select
+                    label="Leave Type"
+                    id="leaveType"
+                    error={!!errors["leave"]?.message}
+                    {...register("leave")}
+                  >
+                    {leaveTypes &&
+                      leaveTypes.map((leave) => {
+                        return (
+                          <MenuItem value={leave.value}>{leave.label}</MenuItem>
+                        );
+                      })}
+                  </Select>
+                  <FormHelperText sx={{ color: "red" }}>
+                    {errors["leave"] ? errors["leave"].message : ""}
+                  </FormHelperText>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>
+                  Address during leave period
+                </InputLabel>
+                <TextField
+                  fullWidth
+                  label="Address during leave period"
+                  margin="normal"
+                  variant="outlined"
+                  placeholder="Enter the address you will be leaving to..."
+                  error={!!errors["addressLeavePeriod"]}
+                  helperText={
+                    errors["addressLeavePeriod"]
+                      ? errors["addressLeavePeriod"].message
+                      : ""
+                  }
+                  {...register("addressLeavePeriod")}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>Start Date</InputLabel>
+                <TextField
+                  fullWidth
+                  type="datetime-local"
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors["start"]}
+                  helperText={errors["start"] ? errors["start"].message : ""}
+                  {...register("start")}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <InputLabel sx={{ marginTop: "10px" }}>End Date</InputLabel>
+                <TextField
+                  fullWidth
+                  type="datetime-local"
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors["end"]}
+                  helperText={errors["end"] ? errors["end"].message : ""}
+                  {...register("end")}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <InputLabel sx={{ marginTop: "10px" }}>Reason</InputLabel>
                 <TextField

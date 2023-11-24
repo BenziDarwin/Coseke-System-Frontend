@@ -22,8 +22,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import * as React from "react";
 import Home from "../../components/dashboard/home";
 import Leave from "../../components/dashboard/leave";
-import { Collapse } from "@mui/material";
+import { Button, Collapse, Grid } from "@mui/material";
 import { ExpandLess, ExpandMore, StarBorder, Work } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -101,6 +102,7 @@ export default function Dashboard() {
   const [open, setOpen] = React.useState(false);
   const dashboard = useSelector((state: any) => state.dashboard);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [collapse, setCollapse] = React.useState(true);
 
@@ -137,9 +139,29 @@ export default function Dashboard() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Grid container>
+            <Grid item xs={9}>
+            <Typography variant="h6" noWrap component="div">
             COSEKE
           </Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Grid container>
+                <Grid item xs={8}>
+                  {JSON.parse(sessionStorage.getItem("user")||"")?.role?.roleName +",  "+JSON.parse(sessionStorage.getItem("user")||"")?.firstname +" "+JSON.parse(sessionStorage.getItem("user")||"")?.lastname}
+                </Grid>
+                <Grid item xs={4}>
+                  <Button color="info" variant="contained" onClick={() => {
+                    sessionStorage.clear();
+                    navigate("/");
+                  }}>
+                    Logout
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+       
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
