@@ -194,6 +194,7 @@ export default function Dashboard() {
             },
             { value: "hr", title: "Human Resource", icon: <PersonIcon /> },
             { value: "roles", title: "Add Roles", icon: <Work /> },
+            { value: "user", title: "User", icon: <Work /> },
           ].map((listItem: any, index: any) => (
             <ListItem key={index} disablePadding sx={{ display: "block" }}>
               {listItem.value == "hr" ? (
@@ -231,7 +232,7 @@ export default function Dashboard() {
                         onClick={() => dispatch({ type: "create-leave" })}
                         sx={{ pl: 4 }}
                       >
-                        <ListItemText primary="Create Leave" />
+                        <ListItemText primary="Leave Types" />
                       </ListItemButton>
                     </List>
                   </Collapse>

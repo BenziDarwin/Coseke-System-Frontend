@@ -3,6 +3,7 @@ import Home from "../components/dashboard/home";
 import HumanResource from "../components/dashboard/humanResource";
 import Leave from "../components/dashboard/leave";
 import Roles from "../pages/roles";
+import User from "../pages/users";
 
 const initialState = {
   currentPage: <Home />,
@@ -20,6 +21,8 @@ export const dashboardReducer = (state: any = initialState, actions: any) => {
       return { ...state, currentPage: <HumanResource /> };
     case "roles":
       return { ...state, currentPage: <Roles /> };
+    case "user":
+      return {...state, currentPage: <User/>};
     default:
       return state;
   }
