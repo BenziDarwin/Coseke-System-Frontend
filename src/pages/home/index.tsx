@@ -16,6 +16,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { object, string, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "../../core/api";
+import { Alert, AlertColor, Snackbar } from "@mui/material";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,6 +25,22 @@ export default function Login() {
     email: string().min(1, "Field is required!"),
     password: string().min(1, "Field is required!"),
   });
+  const [notification, setNotification] = React.useState<{
+    serverity: AlertColor;
+    open: boolean;
+    message: string;
+  }>({ serverity: "success", open: false, message: "" });
+
+  const handleNotification = (serverity: AlertColor,
+    message: string) => {
+    setNotification({ serverity: serverity, open: true, message: message });
+    
+  };
+
+  const handleNotificationClose = () => {
+    setNotification({ serverity: notification.serverity, open: false, message: notification.message });
+    
+  };
 
   type SignUpSchemaType = z.infer<typeof validationSchema>;
 
@@ -34,9 +51,20 @@ export default function Login() {
   } = useForm<SignUpSchemaType>({ resolver: zodResolver(validationSchema) });
 
   const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
-    console.log(values);
-    await login(values);
-    navigate("/home");
+    try {
+      console.log(values);
+    let res = await login(values);
+    if (res.status == 200) {
+      window.location.href = "/home";
+    } else {
+      handleNotification("error", res.data?.message);
+    }
+    
+    } catch(e:any) {
+      
+      handleNotification("error", e?.message);
+    }
+    
   };
 
   return (
@@ -136,6 +164,19 @@ export default function Login() {
           </Box>
         </Grid>
       </Grid>
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleNotificationClose}
+      >
+        <Alert
+          onClose={handleNotificationClose}
+          severity={notification.serverity}
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

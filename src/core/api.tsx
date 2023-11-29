@@ -1,5 +1,6 @@
 import axios from "axios";
 import { AxiosUserInstance, userUrl } from "./baseURLs";
+import { IUser } from "../pages/users/interface";
 
 export const login = async ({
   email,
@@ -49,4 +50,32 @@ export const deleteRole = async (role: any) => {
     JSON.stringify(role),
   );
   return response.data;
+};
+
+
+export const getUsers = async () => {
+  let response = await AxiosUserInstance.get (
+    `${userUrl}/user/get-users`,
+
+  )
+  return response.data;
+}
+
+export const addUser = async (user: IUser) => {
+
+  const customHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${sessionStorage.getItem("token")}`,
+  };
+
+  try {
+      const response = await axios.post(
+          `${userUrl}/user/user-register`,
+          { ...user },
+          { headers: customHeaders }
+      );
+      return response.data;
+  } catch (error) {
+      console.log(error);
+  }
 };

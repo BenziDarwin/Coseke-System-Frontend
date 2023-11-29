@@ -4,8 +4,8 @@ import { IUser } from "../pages/users/interface";
 
 export const formatResponseList = (list: Array<IRole>): ISelectOption[] => {
     const formatedData = list?.map(role => ({
-        value: (role.name).toLowerCase(),
-        label: capitalizeFirstLetter((role.name).toLowerCase())
+        value: (role.roleName).toLowerCase(),
+        label: capitalizeFirstLetter((role.roleName).toLowerCase())
     }));
 
     return formatedData;

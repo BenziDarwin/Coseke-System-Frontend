@@ -25,6 +25,7 @@ import { fetchUsers } from './user_api';
 import { IUser } from "./interface";
 import SearchIcon from '@mui/icons-material/Search';
 import { filterUsersByString } from '../../functions/helpers';
+import { getUsers } from '../../core/api';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -89,8 +90,9 @@ const User = () => {
     const [users, setUsers] = React.useState<IUser[]>([]);
 
     const fetchUsersFunction = async () => {
-        const response = await fetchUsers() as unknown as IUser[];
+        const response = await getUsers() as unknown as IUser[];
         if (response?.length > 0) {
+            console.log(response)
             setUsers(response)
         };
     }

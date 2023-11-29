@@ -28,7 +28,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SelectOption, { ISelectOption } from '../../components/SelectOption';
 
 import { formatResponseList } from '../../functions/helpers';
-import { addUser } from './user_api';
+import { addUser } from '../../core/api';
 import { IRole } from '../roles/interface';
 import { getRoles } from '../../core/api';
 
@@ -61,6 +61,7 @@ const CreateUser = ({
 
     const listRolesFunction = async () => {
         const response = await getRoles() as unknown as Array<IRole>;
+        console.log(response);
         setRolesList(formatResponseList(response));
     }
 
