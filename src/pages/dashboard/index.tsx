@@ -19,13 +19,14 @@ import Typography from "@mui/material/Typography";
 import { CSSObject, Theme, styled, useTheme } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
 import PersonIcon from "@mui/icons-material/Person";
-import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import * as React from "react";
 import Home from "../../components/dashboard/home";
 import Leave from "../../components/dashboard/leave";
 import { Button, Collapse, Grid } from "@mui/material";
 import { ExpandLess, ExpandMore, StarBorder, Work } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { Check } from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -148,7 +149,13 @@ export default function Dashboard() {
             </Grid>
             <Grid item xs={3}>
               <Grid container spacing={2}>
-                <Grid item justifyContent={"center"} flexDirection="column" display="flex" xs={8}>
+                <Grid
+                  item
+                  justifyContent={"center"}
+                  flexDirection="column"
+                  display="flex"
+                  xs={8}
+                >
                   {JSON.parse(sessionStorage.getItem("user") || "")?.role
                     ?.roleName +
                     ",  " +
@@ -157,7 +164,13 @@ export default function Dashboard() {
                     " " +
                     JSON.parse(sessionStorage.getItem("user") || "")?.lastname}
                 </Grid>
-                <Grid item justifyContent={"center"} flexDirection="column" display="flex"  xs={4}>
+                <Grid
+                  item
+                  justifyContent={"center"}
+                  flexDirection="column"
+                  display="flex"
+                  xs={4}
+                >
                   <Button
                     color="info"
                     variant="contained"
@@ -187,7 +200,7 @@ export default function Dashboard() {
         <Divider />
         <List>
           {[
-            { value: "home", title: "Approvals", icon: <HomeIcon /> },
+            { value: "home", title: "Approvals", icon: <Check /> },
             {
               value: "leave",
               title: "Apply for Leave",
@@ -195,7 +208,11 @@ export default function Dashboard() {
             },
             { value: "hr", title: "Human Resource", icon: <PersonIcon /> },
             { value: "roles", title: "Add Roles", icon: <Work /> },
-            { value: "user", title: "User", icon: <SupervisedUserCircleIcon /> },
+            {
+              value: "user",
+              title: "User",
+              icon: <SupervisedUserCircleIcon />,
+            },
           ].map((listItem: any, index: any) => (
             <ListItem key={index} disablePadding sx={{ display: "block" }}>
               {listItem.value == "hr" ? (

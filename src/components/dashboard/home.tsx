@@ -2,13 +2,20 @@ import {
   Box,
   Button,
   Grid,
+  IconButton,
   InputLabel,
   Modal,
   TextField,
   Typography,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import React, { useEffect, useState } from "react";
+import {
+  DataGrid,
+  GridColDef,
+  GridPagination,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from "@mui/x-data-grid";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { approveLeave, getApproverApplications } from "../../core/leaveApi";
 import { Check, Close } from "@mui/icons-material";
 import { ApproveLeave } from "../../models/ApproveLeaveModel";
@@ -16,6 +23,9 @@ import { useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { object, string, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { DataGridStyled } from "../tables";
+import { grey } from "@mui/material/colors";
+import SearchIcon from "@mui/icons-material/Search";
 
 function Home() {
   const [rows, setRows] = useState<any[]>([]);
@@ -23,6 +33,59 @@ function Home() {
   const profile = JSON.parse(sessionStorage.getItem("user")!);
   let [open, setOpen] = useState<boolean>(false);
   const handleOpen = () => setOpen(true);
+
+  interface ICustomGridToolBar {
+    data: any[];
+    handleFilter: (event: ChangeEvent<HTMLInputElement>) => void;
+  }
+
+  const CustomGridToolBar = ({ handleFilter, data }: ICustomGridToolBar) => {
+    return (
+      <GridToolbarContainer sx={{ width: "100%", display: "flex", p: "20px" }}>
+        <TextField
+          onChange={(e: any) => handleFilter(e)}
+          size="small"
+          placeholder="Filter.."
+          sx={{
+            padding: "1px 10px 1px 1px",
+            borderRadius: "6px",
+            width: "360px",
+          }}
+          InputProps={{
+            startAdornment: (
+              <SearchIcon
+                color="primary"
+                sx={{ mr: "10px" }}
+                fontSize="small"
+              />
+            ),
+            endAdornment: (
+              <IconButton
+                title="Clear"
+                aria-label="Clear"
+                size="small"
+              ></IconButton>
+            ),
+          }}
+        />
+        <GridToolbarExport
+          sx={{
+            backgroundColor: grey[50],
+            height: "40px",
+            mr: "10px",
+            px: "10px",
+            color: "black",
+            border: "1px solid black",
+          }}
+        />
+        <GridPagination
+          sx={{
+            marginLeft: "auto",
+          }}
+        />
+      </GridToolbarContainer>
+    );
+  };
 
   const [approve, setApprove] = useState<ApproveLeave>();
 
@@ -212,20 +275,28 @@ function Home() {
           </Typography>
         </Grid>
       </Grid>
-      <DataGrid
-        rows={rows}
+      <DataGridStyled
+        {...rows}
+        autoHeight
+        rows={rows || []}
         columns={columns}
+        slots={{
+          footer: (props: any) => (
+            <CustomGridToolBar
+              data={rows}
+              {...props}
+              handleFilter={() => null}
+            />
+          ),
+        }}
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5,
+              pageSize: 10,
             },
           },
         }}
-        sx={{ marginTop: "20px" }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
+        pageSizeOptions={[5, 10]}
       />
       <Modal
         open={open}

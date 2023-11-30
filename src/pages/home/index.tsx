@@ -31,15 +31,16 @@ export default function Login() {
     message: string;
   }>({ serverity: "success", open: false, message: "" });
 
-  const handleNotification = (serverity: AlertColor,
-    message: string) => {
+  const handleNotification = (serverity: AlertColor, message: string) => {
     setNotification({ serverity: serverity, open: true, message: message });
-    
   };
 
   const handleNotificationClose = () => {
-    setNotification({ serverity: notification.serverity, open: false, message: notification.message });
-    
+    setNotification({
+      serverity: notification.serverity,
+      open: false,
+      message: notification.message,
+    });
   };
 
   type SignUpSchemaType = z.infer<typeof validationSchema>;
@@ -53,18 +54,15 @@ export default function Login() {
   const onSubmitHandler: SubmitHandler<SignUpSchemaType> = async (values) => {
     try {
       console.log(values);
-    let res = await login(values);
-    if (res.status == 200) {
-      window.location.href = "/home";
-    } else {
-      handleNotification("error", res.data?.message);
-    }
-    
-    } catch(e:any) {
-      
+      let res = await login(values);
+      if (res.status == 200) {
+        window.location.href = "/home";
+      } else {
+        handleNotification("error", res.data?.message);
+      }
+    } catch (e: any) {
       handleNotification("error", e?.message);
     }
-    
   };
 
   return (

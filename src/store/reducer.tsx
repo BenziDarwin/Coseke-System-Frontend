@@ -22,7 +22,7 @@ export const dashboardReducer = (state: any = initialState, actions: any) => {
     case "roles":
       return { ...state, currentPage: <Roles /> };
     case "user":
-      return {...state, currentPage: <User/>};
+      return { ...state, currentPage: <User /> };
     default:
       return state;
   }

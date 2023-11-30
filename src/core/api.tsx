@@ -52,30 +52,25 @@ export const deleteRole = async (role: any) => {
   return response.data;
 };
 
-
 export const getUsers = async () => {
-  let response = await AxiosUserInstance.get (
-    `${userUrl}/user/get-users`,
-
-  )
+  let response = await AxiosUserInstance.get(`${userUrl}/user/get-users`);
   return response.data;
-}
+};
 
 export const addUser = async (user: IUser) => {
-
   const customHeaders = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${sessionStorage.getItem("token")}`,
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
   };
 
   try {
-      const response = await axios.post(
-          `${userUrl}/user/user-register`,
-          { ...user },
-          { headers: customHeaders }
-      );
-      return response.data;
+    const response = await axios.post(
+      `${userUrl}/user/user-register`,
+      { ...user },
+      { headers: customHeaders },
+    );
+    return response.data;
   } catch (error) {
-      console.log(error);
+    console.log(error);
   }
 };

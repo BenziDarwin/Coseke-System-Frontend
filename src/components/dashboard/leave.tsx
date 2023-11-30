@@ -7,6 +7,7 @@ import {
   FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Modal,
@@ -15,8 +16,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import React, { useEffect } from "react";
+import {
+  DataGrid,
+  GridColDef,
+  GridPagination,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from "@mui/x-data-grid";
+import React, { ChangeEvent, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { object, string, z } from "zod";
 import {
@@ -27,6 +34,58 @@ import {
 } from "../../core/leaveApi";
 import { useNavigate } from "react-router-dom";
 import { Edit } from "@mui/icons-material";
+import { DataGridStyled } from "../tables";
+import { grey } from "@mui/material/colors";
+import SearchIcon from "@mui/icons-material/Search";
+
+interface ICustomGridToolBar {
+  data: any[];
+  handleFilter: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const CustomGridToolBar = ({ handleFilter, data }: ICustomGridToolBar) => {
+  return (
+    <GridToolbarContainer sx={{ width: "100%", display: "flex", p: "20px" }}>
+      <TextField
+        onChange={(e: any) => handleFilter(e)}
+        size="small"
+        placeholder="Filter.."
+        sx={{
+          padding: "1px 10px 1px 1px",
+          borderRadius: "6px",
+          width: "360px",
+        }}
+        InputProps={{
+          startAdornment: (
+            <SearchIcon color="primary" sx={{ mr: "10px" }} fontSize="small" />
+          ),
+          endAdornment: (
+            <IconButton
+              title="Clear"
+              aria-label="Clear"
+              size="small"
+            ></IconButton>
+          ),
+        }}
+      />
+      <GridToolbarExport
+        sx={{
+          backgroundColor: grey[50],
+          height: "40px",
+          mr: "10px",
+          px: "10px",
+          color: "black",
+          border: "1px solid black",
+        }}
+      />
+      <GridPagination
+        sx={{
+          marginLeft: "auto",
+        }}
+      />
+    </GridToolbarContainer>
+  );
+};
 
 function Leave() {
   const [open, setOpen] = React.useState(false);
@@ -279,20 +338,28 @@ function Leave() {
           </Button>
         </Grid>
       </Grid>
-      <DataGrid
-        rows={rows}
+      <DataGridStyled
+        {...rows}
+        autoHeight
+        rows={rows || []}
         columns={columns}
+        slots={{
+          footer: (props: any) => (
+            <CustomGridToolBar
+              data={rows}
+              {...props}
+              handleFilter={() => null}
+            />
+          ),
+        }}
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5,
+              pageSize: 10,
             },
           },
         }}
-        sx={{ marginTop: "20px" }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
+        pageSizeOptions={[5, 10]}
       />
       <Modal
         open={open}
