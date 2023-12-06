@@ -2,6 +2,7 @@ import CreateLeave from "../components/dashboard/createLeave";
 import Home from "../components/dashboard/home";
 import HumanResource from "../components/dashboard/humanResource";
 import Leave from "../components/dashboard/leave";
+import UserDashboard from "../components/dashboard/userDashboard";
 import Roles from "../pages/roles";
 import User from "../pages/users";
 
@@ -11,7 +12,7 @@ const initialState = {
 
 export const dashboardReducer = (state: any = initialState, actions: any) => {
   switch (actions.type) {
-    case "home":
+    case "approvals":
       return { ...state, currentPage: <Home /> };
     case "leave":
       return { ...state, currentPage: <Leave /> };
@@ -23,6 +24,8 @@ export const dashboardReducer = (state: any = initialState, actions: any) => {
       return { ...state, currentPage: <Roles /> };
     case "user":
       return { ...state, currentPage: <User /> };
+    case "userDashboard":
+      return { ...state, currentPage: <UserDashboard /> };
     default:
       return state;
   }

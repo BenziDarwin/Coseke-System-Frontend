@@ -200,7 +200,12 @@ export default function Dashboard() {
         <Divider />
         <List>
           {[
-            { value: "home", title: "Approvals", icon: <Check /> },
+            {
+              value: "userDashboard",
+              title: "User Dashboard",
+              icon: <Check />,
+            },
+            { value: "approvals", title: "Approvals", icon: <Check /> },
             {
               value: "leave",
               title: "Apply for Leave",
