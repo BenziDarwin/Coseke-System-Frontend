@@ -23,7 +23,7 @@ import { z } from "zod";
 import {
   addLeaveType,
   deleteLeaveType,
-  getAllApplications,
+  getAllUserApplications,
   getLeaveTypes,
 } from "../../core/leaveApi";
 import { LeaveModel } from "../../models/leaveModel";

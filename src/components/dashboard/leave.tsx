@@ -28,7 +28,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { object, string, z } from "zod";
 import {
   applyForLeave,
-  getAllApplications,
+  getAllUserApplications,
   getLeaveTypes,
   handleIssue,
 } from "../../core/leaveApi";
@@ -307,7 +307,7 @@ function Leave() {
             .join(" "),
         }),
       );
-      let leaveApplications = await getAllApplications();
+      let leaveApplications = await getAllUserApplications();
       console.log(leaveApplications);
       setRows(leaveApplications);
 

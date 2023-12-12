@@ -51,8 +51,8 @@ export const applyForLeave = async (apply: ApplyLeaveModel) => {
   }
 };
 
-export const getAllApplications = async () => {
-  const response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-all`);
+export const getAllUserApplications = async () => {
+  const response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-user-all`);
   if (response.status == 200) {
     console.log("Success!");
     return response.data;
@@ -60,6 +60,16 @@ export const getAllApplications = async () => {
     return response;
   }
 };
+
+export const getAllApplications = async () => {
+  const response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-all`)
+  if (response.status == 200) {
+    console.log("Success!");
+    return response.data;
+  } else {
+    return response;
+  }
+}
 
 export const getApproverApplications = async () => {
   const response = await AxiosInstance.get(
