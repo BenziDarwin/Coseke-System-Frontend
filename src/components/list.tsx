@@ -1,38 +1,61 @@
-import { Grid, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import Table from '@mui/material/Table';
+import styled from "@emotion/styled";
+import {
+  Grid,
+  Paper,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  tableCellClasses,
+} from "@mui/material";
+import Table from "@mui/material/Table";
 
 export default function FolderList({ list }: { list: any[] }) {
+  const StyledTableCell = styled(TableCell)(() => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: "darkblue",
+      color: "white",
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+  
+  const StyledTableRow = styled(TableRow)(() => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: "lightblue",
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
   return (
-    
-        <Grid container spacing={1}>
-          <Grid item xs={6}>
-      <TableContainer sx={{height:"300px"}} component={Paper}>
+    <TableContainer sx={{ height: "300px" }} component={Paper}>
       <Table aria-label="simple table">
         <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Leave Type</TableCell>
-            <TableCell align="right">Date Expected Back</TableCell>
-          </TableRow>
+          <StyledTableRow sx={{fontWeight:"bold"}}>
+            <StyledTableCell>Name</StyledTableCell>
+            <StyledTableCell align="right">Leave Type</StyledTableCell>
+            <StyledTableCell align="right">Date Expected Back</StyledTableCell>
+          </StyledTableRow>
         </TableHead>
         <TableBody>
           {list.map((row) => (
-            <TableRow
+            <StyledTableRow
               key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
+              <StyledTableCell component="th" scope="row">
                 {row.name}
-              </TableCell>
-              <TableCell align="right">{row.leave}</TableCell>
-              <TableCell align="right">{row.dateExpectedBack}</TableCell>
-            </TableRow>
+              </StyledTableCell>
+              <StyledTableCell align="right">{row.leave}</StyledTableCell>
+              <StyledTableCell align="right">{row.dateBack}</StyledTableCell>
+            </StyledTableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
-          </Grid>
-          <Grid item xs={6}></Grid>
-        </Grid>
   );
 }

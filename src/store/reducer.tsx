@@ -1,3 +1,4 @@
+import UserLeaveManagement from "../components/dashboard/UserLeaveManagement";
 import CreateLeave from "../components/dashboard/createLeave";
 import Home from "../components/dashboard/home";
 import HumanResource from "../components/dashboard/humanResource";
@@ -18,6 +19,8 @@ export const dashboardReducer = (state: any = initialState, actions: any) => {
       return { ...state, currentPage: <Leave /> };
     case "create-leave":
       return { ...state, currentPage: <CreateLeave /> };
+    case "user-leave-management":
+      return { ...state, currentPage: <UserLeaveManagement /> };
     case "hr":
       return { ...state, currentPage: <HumanResource /> };
     case "roles":

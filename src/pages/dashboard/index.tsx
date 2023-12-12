@@ -27,6 +27,7 @@ import { Button, Collapse, Grid } from "@mui/material";
 import { ExpandLess, ExpandMore, StarBorder, Work } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Check } from "@mui/icons-material";
+import PeopleIcon from "@mui/icons-material/People";
 
 const drawerWidth = 240;
 
@@ -110,7 +111,7 @@ export default function Dashboard() {
 
   const handleClick = (item: string) => {
     setCollapse(!collapse);
-    if (open) {
+    if (!open) {
       dispatch({ type: item });
     }
   };
@@ -203,7 +204,7 @@ export default function Dashboard() {
             {
               value: "userDashboard",
               title: "User Dashboard",
-              icon: <Check />,
+              icon: <PersonIcon />,
             },
             { value: "approvals", title: "Approvals", icon: <Check /> },
             {
@@ -211,7 +212,7 @@ export default function Dashboard() {
               title: "Apply for Leave",
               icon: <TimeToLeaveIcon />,
             },
-            { value: "hr", title: "Human Resource", icon: <PersonIcon /> },
+            { value: "hr", title: "Human Resource", icon: <PeopleIcon /> },
             { value: "roles", title: "Add Roles", icon: <Work /> },
             {
               value: "user",
@@ -256,6 +257,12 @@ export default function Dashboard() {
                         sx={{ pl: 4 }}
                       >
                         <ListItemText primary="Leave Types" />
+                      </ListItemButton>
+                      <ListItemButton
+                        onClick={() => dispatch({ type: "user-leave-management" })}
+                        sx={{ pl: 4 }}
+                      >
+                        <ListItemText primary="User Leave Management" />
                       </ListItemButton>
                     </List>
                   </Collapse>
