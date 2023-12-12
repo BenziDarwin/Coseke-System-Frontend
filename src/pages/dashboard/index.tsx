@@ -259,7 +259,9 @@ export default function Dashboard() {
                         <ListItemText primary="Leave Types" />
                       </ListItemButton>
                       <ListItemButton
-                        onClick={() => dispatch({ type: "user-leave-management" })}
+                        onClick={() =>
+                          dispatch({ type: "user-leave-management" })
+                        }
                         sx={{ pl: 4 }}
                       >
                         <ListItemText primary="User Leave Management" />

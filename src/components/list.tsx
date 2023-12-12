@@ -21,13 +21,13 @@ export default function FolderList({ list }: { list: any[] }) {
       fontSize: 14,
     },
   }));
-  
+
   const StyledTableRow = styled(TableRow)(() => ({
-    '&:nth-of-type(odd)': {
+    "&:nth-of-type(odd)": {
       backgroundColor: "lightblue",
     },
     // hide last border
-    '&:last-child td, &:last-child th': {
+    "&:last-child td, &:last-child th": {
       border: 0,
     },
   }));
@@ -35,7 +35,7 @@ export default function FolderList({ list }: { list: any[] }) {
     <TableContainer sx={{ height: "300px" }} component={Paper}>
       <Table aria-label="simple table">
         <TableHead>
-          <StyledTableRow sx={{fontWeight:"bold"}}>
+          <StyledTableRow sx={{ fontWeight: "bold" }}>
             <StyledTableCell>Name</StyledTableCell>
             <StyledTableCell align="right">Leave Type</StyledTableCell>
             <StyledTableCell align="right">Date Expected Back</StyledTableCell>
