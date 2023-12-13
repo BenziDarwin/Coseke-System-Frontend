@@ -71,6 +71,16 @@ export const getAllApplications = async () => {
   }
 }
 
+export const getLeaveDays = async () => {
+  const response = await AxiosInstance.post(`${leaveUrl}/tracker/leave-days`,JSON.stringify({email:JSON.parse(sessionStorage.getItem("user") || "")?.email}))
+  if (response.status == 200) {
+    console.log("Success!");
+    return response.data;
+  } else {
+    return response;
+  } 
+}
+
 export const getApproverApplications = async () => {
   const response = await AxiosInstance.get(
     `${leaveUrl}/apply-leave/approver-applications`,

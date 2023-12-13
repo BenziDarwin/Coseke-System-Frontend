@@ -1,5 +1,3 @@
-import React from "react";
-import FolderList from "../list";
 import {
   Box,
   Card,
@@ -8,38 +6,50 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { getAllApplications, getAllUserApplications, getLeaveDays } from "../../core/leaveApi";
+import { IApplyForLeave } from "../../models/leaveApplicationModel";
+import FolderList from "../list";
 
-const lt = [
-  {
-    name: "Ssali Benjamin",
-    leave: "Sick Leave",
-    dateBack: new Date().toDateString(),
-  },
-  {
-    name: "Odong Sunday",
-    leave: "Annual Leave",
-    dateBack: new Date().toDateString(),
-  },
-  {
-    name: "Kiiza Justus",
-    leave: "Paternity Leave",
-    dateBack: new Date().toDateString(),
-  },
-  {
-    name: "Otim Tom",
-    leave: "Sick Leave",
-    dateBack: new Date().toDateString(),
-  },
-];
-
-const leaves = [
-  { name: "Maternity leave", daysAvailable: 60, daysUsed: 0 },
-  { name: "Sick leave", daysAvailable: 4, daysUsed: 16 },
-  { name: "Annual leave", daysAvailable: 21, daysUsed: 4 },
-];
 
 function UserDashboard() {
-  
+  const [usersOnLeave, setUsersOnLeave] = useState<IApplyForLeave[]>([]);
+  const [leaveDays, setLeaveDays] = useState<any[]>([]);
+  const [status, setStatus] = useState<{completed:number; pending:number; denied:number; total:number}>({completed:0, pending:0, denied:0, total:0});
+  useEffect(() => {
+    (async() =>{
+      const users: IApplyForLeave[] = await getAllApplications();
+      let arr:IApplyForLeave[] = [];
+    users.forEach((user) => {
+      if(user.stage == "Approved") {
+        arr.push(user);
+      }
+    })
+    const days = await getLeaveDays();
+    let arr2:any[] = [];
+    days.leave.forEach((leave:any) => {
+      if(days[leave.name]) {
+          let obj = {name:leave.name, daysUsed: (leave.duration - days[leave.name]), daysLeft: days[leave.name]};
+          arr2.push(obj);
+      }
+    })
+
+    const userApps:IApplyForLeave[] = await getAllUserApplications();
+    let pending:number = userApps.filter(application => {
+      return application.stage != "Denied" && application.stage !="Approved";
+    }).length;
+    let completed:number = userApps.filter(application => {
+      return application.stage == "Approved";
+    }).length;
+    let denied:number = userApps.filter(application => {
+      return application.stage == "Denied"
+    }).length;
+    setStatus({pending:pending, completed:completed, denied:denied, total:userApps.length})
+    setLeaveDays(arr2);
+    setUsersOnLeave(arr);
+
+    })()
+  },[])
   return (
     <Box component={"div"}>
       <Box
@@ -52,7 +62,7 @@ function UserDashboard() {
           flexDirection: "row",
         }}
       >
-        {leaves.map((leave: any) => {
+        {leaveDays.map((leave: any) => {
           return (
             <Card
               sx={{
@@ -68,7 +78,14 @@ function UserDashboard() {
                   variant="h5"
                   sx={{ marginY: "5px", textAlign: "center" }}
                 >
-                  {leave.name}
+                  
+                  {leave.name
+              .toLowerCase()
+              .split(" ")
+              .map(
+                (word: string) => word.charAt(0).toUpperCase() + word.slice(1),
+              )
+              .join(" ")}
                 </Typography>
                 <Grid
                   container
@@ -80,7 +97,7 @@ function UserDashboard() {
                   <Grid item xs={7}>
                     <Typography>Days Used: {`${leave.daysUsed}`}</Typography>
                     <Typography>
-                      Days Left: {`${leave.daysAvailable}`}
+                      Days Left: {`${leave.daysLeft}`}
                     </Typography>
                   </Grid>
                   <Grid item xs={5}>
@@ -90,7 +107,7 @@ function UserDashboard() {
                         size={80}
                         value={Math.round(
                           (leave.daysUsed /
-                            (leave.daysAvailable + leave.daysUsed)) *
+                            (leave.daysLeft + leave.daysUsed)) *
                             100,
                         )}
                       />
@@ -112,7 +129,7 @@ function UserDashboard() {
                           color={"darkblue"}
                         >
                           {`${leave.daysUsed} / ${
-                            leave.daysAvailable + leave.daysUsed
+                            leave.daysLeft + leave.daysUsed
                           }`}
                         </Typography>
                       </Box>
@@ -138,7 +155,7 @@ function UserDashboard() {
                   >
                     <Grid item xs={4}>
                       <Typography color={"darkblue"} variant="h3">
-                        32
+                        {status.total}
                       </Typography>
                     </Grid>
                     <Grid item xs={8}>
@@ -159,7 +176,7 @@ function UserDashboard() {
                   >
                     <Grid item xs={4}>
                       <Typography color={"darkblue"} variant="h3">
-                        6
+                        {status.pending}
                       </Typography>
                     </Grid>
                     <Grid item xs={8}>
@@ -182,7 +199,7 @@ function UserDashboard() {
                   >
                     <Grid item xs={4}>
                       <Typography color={"darkblue"} variant="h3">
-                        10
+                        {status.denied}
                       </Typography>
                     </Grid>
                     <Grid item xs={8}>
@@ -203,7 +220,7 @@ function UserDashboard() {
                   >
                     <Grid item xs={4}>
                       <Typography color={"darkblue"} variant="h3">
-                        16
+                        {status.completed}
                       </Typography>
                     </Grid>
                     <Grid item xs={8}>
@@ -220,7 +237,7 @@ function UserDashboard() {
           <Typography variant="h5" marginY={"10px"}>
             Users on Leave
           </Typography>
-          <FolderList list={lt} />
+          <FolderList list={usersOnLeave} stage={undefined} />
         </Grid>
       </Grid>
     </Box>
