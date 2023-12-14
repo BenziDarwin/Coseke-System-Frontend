@@ -1,12 +1,15 @@
 import {
+  Alert,
+  AlertColor,
   Box,
   Card,
   CardContent,
   CircularProgress,
   Grid,
+  Snackbar,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllApplications, getAllUserApplications, getLeaveDays } from "../../core/leaveApi";
 import { IApplyForLeave } from "../../models/leaveApplicationModel";
 import FolderList from "../list";
@@ -16,8 +19,25 @@ function UserDashboard() {
   const [usersOnLeave, setUsersOnLeave] = useState<IApplyForLeave[]>([]);
   const [leaveDays, setLeaveDays] = useState<any[]>([]);
   const [status, setStatus] = useState<{completed:number; pending:number; denied:number; total:number}>({completed:0, pending:0, denied:0, total:0});
+  const [notification, setNotification] = React.useState<{
+    serverity: AlertColor;
+    open: boolean;
+    message: string;
+  }>({ serverity: "success", open: false, message: "" });
+ 
+
+  const handleNotification = () => {
+    setNotification({ serverity: "success", open: false, message: "" });
+  };
+  
   useEffect(() => {
     (async() =>{
+      try {
+        const users: IApplyForLeave[]|any = await getAllApplications();  
+      } catch(e: any) {
+        setNotification({serverity:"error", message:e.message, open:true})
+        return;
+      }
       const users: IApplyForLeave[] = await getAllApplications();
       let arr:IApplyForLeave[] = [];
     users.forEach((user) => {
@@ -25,16 +45,27 @@ function UserDashboard() {
         arr.push(user);
       }
     })
-    const days = await getLeaveDays();
+    var days:any;
+    try {
+    days = await getLeaveDays();
+  } catch(e: any) {
+    setNotification({serverity:"error", message:e.message, open:true});
+    return;
+  }
     let arr2:any[] = [];
-    days.leave.forEach((leave:any) => {
+    days?.leave.forEach((leave:any) => {
       if(days[leave.name]) {
           let obj = {name:leave.name, daysUsed: (leave.duration - days[leave.name]), daysLeft: days[leave.name]};
           arr2.push(obj);
       }
     })
-
-    const userApps:IApplyForLeave[] = await getAllUserApplications();
+    var userApps:IApplyForLeave[] = [];
+    try{
+    userApps = await getAllUserApplications();
+  } catch(e: any) {
+    setNotification({serverity:"error", message:e.message, open:true});
+    return;
+  }
     let pending:number = userApps.filter(application => {
       return application.stage != "Denied" && application.stage !="Approved";
     }).length;
@@ -240,6 +271,19 @@ function UserDashboard() {
           <FolderList list={usersOnLeave} stage={undefined} />
         </Grid>
       </Grid>
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleNotification}
+      >
+        <Alert
+          onClose={handleNotification}
+          severity={notification.serverity}
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

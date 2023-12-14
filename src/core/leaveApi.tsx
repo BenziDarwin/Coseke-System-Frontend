@@ -52,33 +52,49 @@ export const applyForLeave = async (apply: ApplyLeaveModel) => {
 };
 
 export const getAllUserApplications = async () => {
-  const response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-user-all`);
-  if (response.status == 200) {
-    console.log("Success!");
-    return response.data;
-  } else {
-    return response;
+  var response:any;
+  try {
+    response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-user-all`);
+    if (response.status == 200) {
+      console.log("Success!");
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (e) {
+    return response
   }
 };
 
 export const getAllApplications = async () => {
-  const response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-all`)
-  if (response.status == 200) {
-    console.log("Success!");
-    return response.data;
-  } else {
-    return response;
+  let response:any;
+  try {
+    response = await AxiosInstance.get(`${leaveUrl}/apply-leave/get-all`)
+    if (response.status == 200) {
+      console.log("Success!");
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (e) {
+    return response
   }
+  
 }
 
 export const getLeaveDays = async () => {
-  const response = await AxiosInstance.post(`${leaveUrl}/tracker/leave-days`,JSON.stringify({email:JSON.parse(sessionStorage.getItem("user") || "")?.email}))
-  if (response.status == 200) {
-    console.log("Success!");
-    return response.data;
-  } else {
-    return response;
-  } 
+ let response:any;
+  try {
+    response = await AxiosInstance.post(`${leaveUrl}/tracker/leave-days`,JSON.stringify({email:JSON.parse(sessionStorage.getItem("user") || "")?.email}))
+    if (response.status == 200) {
+      console.log("Success!");
+      return response.data;
+    } else {
+      return response;
+    }
+  } catch (e) {
+    return response
+  }
 }
 
 export const getApproverApplications = async () => {
